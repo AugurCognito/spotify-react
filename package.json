@@ -3,15 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "autoprefixer": "^10.4.7",
+    "axios": "^0.27.2",
+    "daisyui": "^2.17.0",
+    "postcss": "^8.4.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "0.9.5"
+    "react-scripts": "0.9.5",
+    "tailwindcss": "^3.1.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^3.16.1",
+    "eslint-plugin-react": "^6.4.1"
+  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "tailwindcss": "npx tailwindcss build -i src/index.css -c tailwind.config.js -o  src/tailwind.css",
+    "start": "npm run tailwindcss && react-scripts start",
+    "build": "npm run tailwindcss && react-scripts build",    "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
 }
