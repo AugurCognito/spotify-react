@@ -9,7 +9,7 @@ import "./App.css"
 function App() {
 
     const CLIENT_ID = "e95799c6439c4de2a80e3580006eaf56"
-    const REDIRECT_URI = "https://spotify.aniketsingh.net/"
+    const REDIRECT_URI = "http://localhost:3000/"
     const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
     const RESPONSE_TYPE = "token"
 
@@ -38,8 +38,50 @@ function App() {
     const [searchKey, setSearchKey] = useState("")
     const [artists, setArtists] = useState([])
     const [songs, setSongs] = useState([])
-    const [userPlaylists, setUserPlaylists] = useState([]);
+    const [userPlaylists, setUserPlaylists] = useState([])
+    const [userSongs, setUserSongs] = useState([])
 
+    const displayStat = async (e) => {
+        console.log(e)
+        const {data} = await axios.get(`https://api.spotify.com/v1/playlists/${e}/tracks`, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        })
+        console.log(data.items)
+        setUserSongs(data.items)
+    }
+    const renderUserSongInfo =() => {
+
+        return <div class="overflow-x-auto">
+
+            <table class="table w-full table-compact">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Album</th>
+                    <th>Artist</th>
+                    <th>Country</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                  {userSongs.map((item, index) => (
+                      <tr>
+                      <td>{index+1}</td>
+                      <td>{item.track.name}</td>
+                      <td>{item.track.album.name}</td>
+                      <td>{item.track.artists[0].name}</td>
+                      <td>{item.track.available_markets.length<5 ? item.track.available_markets:<hr/>}</td>
+                      </tr>
+                  ))}
+                </tbody>
+            </table>
+            </div>
+    }
 
     const loadUserPlatlists = async (e) => {
         e.preventDefault()
@@ -54,12 +96,12 @@ function App() {
     }
 
     const renderUserPlaylist= () => {
-        return <select class="select select-primary w-full max-w-xs">
-            <option disabled selected>What is the best TV show?</option>
-                    {userPlaylists.map(item =>(
-                    <option>{item.name}</option>
-                    ))}
-            </select>
+        return      <select class="select select-primary w-full max-w-xs" onChange={e => displayStat(e.target.value)}>
+                        <option disabled selected>Choose your playlist</option>
+                        {userPlaylists.map(item =>(
+                            <option value={item.id}>{item.name}</option>
+                        ))}
+                    </select>
     }
 
     const searchArtists = async (e) => {
@@ -124,28 +166,14 @@ function App() {
                     : <br/>
                 }
                 <br/>
-                {renderUserPlaylist()}
-                {token ?
-                    <form onSubmit={searchArtists}>
-                        <input type="text" onChange={e => setSearchKey(e.target.value)}/>
-                        <button type={"submit"}>Search</button>
-                    </form>
-
-                    : <h2>Please login</h2>
-                }
-
-                {token ?
-                    <form onSubmit={searchArtists}>
-                        <input type="text" onChange={e => setSearchKey(e.target.value)}/>
-                        <button type={"submit"}>Search</button>
-                    </form>
-                 : <hr/>
-                }
+              {token ? renderUserPlaylist()
+               :
+              <br/>}
         {token? renderArtists() : <br/>}
         {token? renderArtists() : <br/>}
         {token? renderPlaylist(): <br/>}
             </header>
-
+        {token? renderUserSongInfo():<br/>}
         </div>
     )
 }
