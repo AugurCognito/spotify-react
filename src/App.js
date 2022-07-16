@@ -9,7 +9,7 @@ import "./App.css"
 function App() {
 
     const CLIENT_ID = "e95799c6439c4de2a80e3580006eaf56"
-    const REDIRECT_URI = "http://localhost:3000/"
+    const REDIRECT_URI = "https://spotify.aniketsingh.net/"
     const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
     const RESPONSE_TYPE = "token"
 
@@ -53,11 +53,12 @@ function App() {
         console.log(data.items)
         setUserSongs(data.items)
     }
+    var getCountryNames = new Intl.DisplayNames(['en'], {type: 'region'})
     const renderUserSongInfo =() => {
 
         return <div class="overflow-x-auto">
 
-            <table class="table w-full table-compact">
+            <table class="table table-compact w-full">
                 <thead>
                 <tr>
                     <th></th>
@@ -75,7 +76,23 @@ function App() {
                       <td>{item.track.name}</td>
                       <td>{item.track.album.name}</td>
                       <td>{item.track.artists[0].name}</td>
-                      <td>{item.track.available_markets.length<5 ? item.track.available_markets:<hr/>}</td>
+                      <td>
+                      <label for={item.track.id} class="btn btn-xs btn-outline btn-info modal-button">{item.track.id}</label>
+
+                        <input type="checkbox" id={item.track.id} class="modal-toggle" />
+                        <label for={item.track.id} class="modal cursor-pointer">
+                        <label class="modal-box w-11/12 max-w-5xl" for="">
+                          <h3 class="text-lg font-bold">Markets {item.track.name} is available in</h3>
+                          {item.track.album.available_markets ?
+
+                           <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                                          {item.track.album.available_markets.map((ite) =>{return<div>{getCountryNames.of(ite)}</div>} )}
+                            </div>
+                           : <div>Not Available Anywhere</div>
+                          }
+                        </label>
+                        </label>
+                      </td>
                       </tr>
                   ))}
                 </tbody>
